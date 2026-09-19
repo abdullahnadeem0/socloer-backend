@@ -55,17 +55,14 @@ const connectDB = async () => {
         
         console.log('URI:', uri.replace(/:[^:@]+@/, ':****@')); // Hide password
 
-        const conn = await mongoose.connect(uri, {
-            serverSelectionTimeoutMS: 30000,
-            socketTimeoutMS: 45000,
-            connectTimeoutMS: 30000,
-            maxPoolSize: 10,
-            family: 4,                     // ⭐ IPv4 زبردستی
-            // autoSelectFamily: false,        // ⭐ یہ لازمی ہے
-            retryWrites: true,
-            w: 'majority'
-        });
-
+const conn = await mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    connectTimeoutMS: 30000,
+    maxPoolSize: 10,
+    family: 4
+    // autoSelectFamily: false   ← یہ ہٹا دیں
+});
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
         console.log(`📁 Database: ${conn.connection.name}`);
     } catch (error) {
