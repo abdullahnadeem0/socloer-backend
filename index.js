@@ -8,9 +8,14 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// ⭐ DNS FIX
+// ⭐⭐⭐ DNS FIX (بہتر بنایا گیا) ⭐⭐⭐
+// Node.js v22 میں یہ ضروری ہے
 dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 dns.setDefaultResultOrder('ipv4first');
+
+// ⭐ اضافی: Node.js کے resolver کو زبردستی استعمال کرو
+import { setDefaultResultOrder } from "dns";
+setDefaultResultOrder("ipv4first");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,7 +59,11 @@ const connectDB = async () => {
             serverSelectionTimeoutMS: 30000,
             socketTimeoutMS: 45000,
             connectTimeoutMS: 30000,
-            maxPoolSize: 10
+            maxPoolSize: 10,
+            family: 4,                     // ⭐ IPv4 زبردستی
+            // autoSelectFamily: false,        // ⭐ یہ لازمی ہے
+            retryWrites: true,
+            w: 'majority'
         });
 
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
