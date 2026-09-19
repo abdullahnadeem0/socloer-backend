@@ -18,19 +18,19 @@ const EMAIL_PASS = process.env.EMAIL_PASS || 'nlqx jqis yrtr hloy';
 // ============================================
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
+    port: 465,              // ⭐ 587 سے 465
+    secure: true,           // ⭐ false سے true
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
     },
-    family: 4,                    // ⭐ IPv4 زبردستی
+    family: 4,
     tls: {
         rejectUnauthorized: false
     },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000
+    connectionTimeout: 60000,   // ⭐ 30s سے 60s
+    greetingTimeout: 60000,
+    socketTimeout: 60000
 });
 
 transporter.verify((error, success) => {
