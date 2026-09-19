@@ -14,14 +14,17 @@ const EMAIL_USER = process.env.EMAIL_USER || 'techrosoft.academy@gmail.com';
 const EMAIL_PASS = process.env.EMAIL_PASS || 'nlqx jqis yrtr hloy';
 
 // ============================================
-// TRANSPORTER
+// TRANSPORTER  ⭐ (تبدیل شدہ)
 // ============================================
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
     },
+    family: 4,                    // ⭐ IPv4 زبردستی
     tls: {
         rejectUnauthorized: false
     },
