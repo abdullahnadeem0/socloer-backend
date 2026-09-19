@@ -8,9 +8,14 @@ import { fileURLToPath } from "url";
 
 dotenv.config();
 
-// ⭐ DNS FIX
+// ⭐⭐⭐ DNS FIX (بہتر بنایا گیا) ⭐⭐⭐
+// Node.js v22 میں یہ ضروری ہے
 dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
 dns.setDefaultResultOrder('ipv4first');
+
+// ⭐ اضافی: Node.js کے resolver کو زبردستی استعمال کرو
+import { setDefaultResultOrder } from "dns";
+setDefaultResultOrder("ipv4first");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,19 +34,8 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();
 
-// ⭐ CORS - تمام origins (development)
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: false
-}));
-
-// ⭐ Preflight requests
-app.options('*', cors());
-
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(cors());
+app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ============================================
@@ -51,6 +45,7 @@ const connectDB = async () => {
     try {
         console.log('🔄 Connecting to MongoDB...');
         
+        // ⭐ SAHI TAREEQA: .env se URI lo
         const uri = process.env.MONGO_URI;
         
         if (!uri) {
@@ -58,18 +53,16 @@ const connectDB = async () => {
             process.exit(1);
         }
         
-        console.log('URI:', uri.replace(/:[^:@]+@/, ':****@'));
+        console.log('URI:', uri.replace(/:[^:@]+@/, ':****@')); // Hide password
 
-        const conn = await mongoose.connect(uri, {
-            serverSelectionTimeoutMS: 30000,
-            socketTimeoutMS: 45000,
-            connectTimeoutMS: 30000,
-            maxPoolSize: 10,
-            family: 4,
-            retryWrites: true,
-            w: 'majority'
-        });
-
+const conn = await mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 30000,
+    socketTimeoutMS: 45000,
+    connectTimeoutMS: 30000,
+    maxPoolSize: 10,
+    family: 4
+    // autoSelectFamily: false   ← یہ ہٹا دیں
+});
         console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
         console.log(`📁 Database: ${conn.connection.name}`);
     } catch (error) {
